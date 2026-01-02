@@ -4,23 +4,51 @@
                              http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-
-  <groupId>com.example</groupId>
+  <groupId>com.external.helper</groupId>
   <artifactId>helper-all</artifactId>
   <version>1.0.0</version>
   <packaging>jar</packaging>
 
   <name>helper-all</name>
-  <description>Helper library that pulls an older commons-lang3 transitively</description>
+  <description>External helper lib that shades commons-lang3 3.8.1 inside the JAR</description>
 
-  <dependencies>
-    <!-- Lower version that must appear TRANSITIVE in the main project scan -->
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>3.8.1</version>
-    </dependency>
-  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.4.1</version>
+
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+
+            <configuration>
+              <artifactSet>
+                <includes>
+                  <include>org.apache.commons:commons-lang3:3.8.1</include>
+                </includes>
+              </artifactSet>
+
+              <relocations>
+                <relocation>
+                  <pattern>org.apache.commons.lang3</pattern>
+                  <shadedPattern>com.external.shaded.commons.lang3</shadedPattern>
+                </relocation>
+              </relocations>
+
+              <createDependencyReducedPom>true</createDependencyReducedPom>
+            </configuration>
+
+          </execution>
+        </executions>
+
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
 
